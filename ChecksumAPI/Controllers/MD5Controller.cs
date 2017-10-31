@@ -21,7 +21,7 @@ namespace ChecksumAPI.Controllers
         private IConfiguration Configuration { get; }
 
         [HttpGet]
-        public string MD5(string fileUrl, string authKey, int? offsetPercent)
+        public string MD5(string fileUrl, int? offsetPercent)
         {
             byte[] result;
             using (var webClient = new System.Net.WebClient())
