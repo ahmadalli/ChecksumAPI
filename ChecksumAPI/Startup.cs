@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Reflection;
 
 namespace ChecksumAPI
 {
@@ -32,6 +35,10 @@ namespace ChecksumAPI
             services.AddMvcCore();
 
             services.AddSingleton(_ => Configuration);
+
+            services.AddDbContext<CADbContext>(options =>
+                 options.UseSqlite("Data Source=checksum.db", sqlOptions => sqlOptions.MigrationsAssembly(typeof(CADbContext).GetTypeInfo().Assembly.GetName().Name))
+                        .ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
