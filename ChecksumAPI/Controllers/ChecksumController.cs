@@ -65,6 +65,8 @@ namespace ChecksumAPI.Controllers
                             Algorithm = algorithm,
                             Checksum = checksum
                         });
+
+                        _context.SaveChanges();
                     }
                     catch
                     {
