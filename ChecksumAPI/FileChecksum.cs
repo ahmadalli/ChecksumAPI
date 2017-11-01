@@ -17,7 +17,7 @@ namespace ChecksumAPI
             public void Configure(EntityTypeBuilder<FileChecksum> builder)
             {
                 builder.ToTable(nameof(FileChecksum).Pluralize());
-                builder.HasKey(fc => new { fc.FileUrl, fc.OffsetPercent });
+                builder.HasKey(fc => new { fc.FileUrl, fc.OffsetPercent, fc.Algorithm });
                 builder.Property(fx => fx.FileUrl).IsRequired();
                 builder.Property(fx => fx.OffsetPercent).IsRequired();
                 builder.Property(fx => fx.Algorithm).IsRequired();
