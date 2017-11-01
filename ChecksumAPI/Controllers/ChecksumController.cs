@@ -25,16 +25,16 @@ namespace ChecksumAPI.Controllers
         }
 
         [HttpGet]
-        public string Get(string fileUrl, byte offsetPercent = 0, string algorithm = "MD5", bool force = false)
+        public IActionResult Get(string fileUrl, byte offsetPercent = 0, string algorithm = "MD5", bool force = false)
         {
             if (offsetPercent > 100)
             {
-                return "offset must be less than 100 percent";
+                return BadRequest("offset must be less than 100 percent");
             }
 
             if (!isValidUrl(fileUrl))
             {
-                return "the url is not valid";
+                return BadRequest("the url is not valid");
             }
 
             Expression<Func<FileChecksum, bool>> predicate = fc => fc.FileUrl == fileUrl && fc.Algorithm == "MD5" && fc.OffsetPercent == offsetPercent;
@@ -68,7 +68,7 @@ namespace ChecksumAPI.Controllers
 
             _context.SaveChanges();
 
-            return _set.First(predicate).Checksum;
+            return Ok(_set.First(predicate).Checksum);
         }
 
         private bool isValidUrl(string url)
