@@ -43,8 +43,10 @@ namespace ChecksumAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
+
             using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
                 using (var context = scope.ServiceProvider.GetRequiredService<CADbContext>())
