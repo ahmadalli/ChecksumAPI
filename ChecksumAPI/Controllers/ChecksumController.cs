@@ -49,20 +49,28 @@ namespace ChecksumAPI.Controllers
 
                 for (byte op = 0; op < 50;)
                 {
-                    var offset = result.Length * op / 200;
-                    byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName(algorithm)).ComputeHash(result, offset, result.Length - offset);
-                    var checksum = BitConverter
-                        .ToString(hash)
-                        .Replace("-", string.Empty)
-                        .ToLower();
-
-                    _set.AddOrUpdate(new FileChecksum
+                    try
                     {
-                        FileUrl = fileUrl,
-                        OffsetPercent = op,
-                        Algorithm = algorithm,
-                        Checksum = checksum
-                    });
+                        var offset = result.Length * op / 200;
+                        byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName(algorithm)).ComputeHash(result, offset, result.Length - offset);
+                        var checksum = BitConverter
+                            .ToString(hash)
+                            .Replace("-", string.Empty)
+                            .ToLower();
+
+                        _set.AddOrUpdate(new FileChecksum
+                        {
+                            FileUrl = fileUrl,
+                            OffsetPercent = op,
+                            Algorithm = algorithm,
+                            Checksum = checksum
+                        });
+                    }
+                    catch
+                    {
+
+                        continue;
+                    }
 
                     if (op < 10)
                     {
