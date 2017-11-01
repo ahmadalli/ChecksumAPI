@@ -41,7 +41,7 @@ namespace ChecksumAPI.Controllers
                 return BadRequest("the url is not valid");
             }
 
-            Expression<Func<FileChecksum, bool>> predicate = fc => fc.FileUrl == fileUrl && fc.Algorithm == "MD5" && fc.OffsetPercent == offsetPercent;
+            Expression<Func<FileChecksum, bool>> predicate = fc => fc.FileUrl == fileUrl && fc.Algorithm == algorithm && fc.OffsetPercent == offsetPercent;
 
             if (force || !_set.Any(predicate))
             {
@@ -53,43 +53,56 @@ namespace ChecksumAPI.Controllers
                     result = webClient.DownloadData(fileUrl);
                 }
 
-                for (byte op = 0; op < 50;)
+                if (!_set.Any(fc => fc.FileUrl == fileUrl && fc.Algorithm == algorithm))
                 {
-                    _logger.LogInformation($"ChecksumController - Get - computing hash for op = {op}");
-
-                    try
+                    for (byte op = 0; op < 50;)
                     {
-                        var offset = result.Length * op / 200;
-                        byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName(algorithm)).ComputeHash(result, offset, result.Length - offset);
-                        var checksum = BitConverter
-                            .ToString(hash)
-                            .Replace("-", string.Empty)
-                            .ToLower();
+                        _logger.LogInformation($"ChecksumController - Get - computing hash for op = {op}");
 
-                        _set.AddOrUpdate(new FileChecksum
+                        try
                         {
-                            FileUrl = fileUrl,
-                            OffsetPercent = op,
-                            Algorithm = algorithm,
-                            Checksum = checksum
-                        });
+                            string checksum = CalculateChecksum(algorithm, result, op);
 
-                        _context.SaveChanges();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "");
-                        continue;
-                    }
+                            _set.AddOrUpdate(new FileChecksum
+                            {
+                                FileUrl = fileUrl,
+                                OffsetPercent = op,
+                                Algorithm = algorithm,
+                                Checksum = checksum
+                            });
 
-                    if (op < 10)
-                    {
-                        op++;
+                            _context.SaveChanges();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "");
+                            continue;
+                        }
+
+                        if (op < 10)
+                        {
+                            op++;
+                        }
+                        else
+                        {
+                            op += 5;
+                        }
                     }
-                    else
+                }
+
+                if (!_set.Any(predicate))
+                {
+                    string checksum = CalculateChecksum(algorithm, result, offsetPercent);
+
+                    _set.AddOrUpdate(new FileChecksum
                     {
-                        op += 5;
-                    }
+                        FileUrl = fileUrl,
+                        OffsetPercent = offsetPercent,
+                        Algorithm = algorithm,
+                        Checksum = checksum
+                    });
+
+                    _context.SaveChanges();
                 }
             }
 
@@ -98,6 +111,17 @@ namespace ChecksumAPI.Controllers
             _logger.LogInformation($"ChecksumController - Get - end");
 
             return Ok(_set.First(predicate).Checksum);
+        }
+
+        private static string CalculateChecksum(string algorithm, byte[] result, byte offsetPercent)
+        {
+            var offset = result.Length * offsetPercent / 200;
+            byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName(algorithm)).ComputeHash(result, offset, result.Length - offset);
+            var checksum = BitConverter
+                .ToString(hash)
+                .Replace("-", string.Empty)
+                .ToLower();
+            return checksum;
         }
 
         private bool isValidUrl(string url)
