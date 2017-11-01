@@ -47,7 +47,7 @@ namespace ChecksumAPI.Controllers
                     result = webClient.DownloadData(fileUrl);
                 }
 
-                for (byte op = 0; op < 50; op++)
+                for (byte op = 0; op < 50;)
                 {
                     var offset = result.Length * op / 200;
                     byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName(algorithm)).ComputeHash(result, offset, result.Length - offset);
@@ -63,6 +63,15 @@ namespace ChecksumAPI.Controllers
                         Algorithm = algorithm,
                         Checksum = checksum
                     });
+
+                    if (op < 10)
+                    {
+                        op++;
+                    }
+                    else
+                    {
+                        op += 5;
+                    }
                 }
             }
 
