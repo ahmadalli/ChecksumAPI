@@ -51,7 +51,7 @@ namespace ChecksumAPI.Controllers
                         .Replace("-", string.Empty)
                         .ToLower();
 
-                    _set.Add(new FileChecksum
+                    _set.AddOrUpdate(new FileChecksum
                     {
                         FileUrl = fileUrl,
                         OffsetPercent = op,
