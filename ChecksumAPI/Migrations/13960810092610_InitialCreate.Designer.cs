@@ -10,7 +10,7 @@ using System;
 namespace ChecksumAPI.Migrations
 {
     [DbContext(typeof(CADbContext))]
-    [Migration("13960810091330_InitialCreate")]
+    [Migration("13960810092610_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,13 +25,12 @@ namespace ChecksumAPI.Migrations
 
                     b.Property<byte>("OffsetPercent");
 
-                    b.Property<string>("Algorithm")
-                        .IsRequired();
+                    b.Property<string>("Algorithm");
 
                     b.Property<string>("Checksum")
                         .IsRequired();
 
-                    b.HasKey("FileUrl", "OffsetPercent");
+                    b.HasKey("FileUrl", "OffsetPercent", "Algorithm");
 
                     b.ToTable("FileChecksums");
                 });

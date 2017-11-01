@@ -19,7 +19,7 @@ namespace ChecksumAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FileChecksums", x => new { x.FileUrl, x.OffsetPercent });
+                    table.PrimaryKey("PK_FileChecksums", x => new { x.FileUrl, x.OffsetPercent, x.Algorithm });
                 });
         }
 
