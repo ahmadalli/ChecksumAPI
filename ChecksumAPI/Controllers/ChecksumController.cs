@@ -27,9 +27,9 @@ namespace ChecksumAPI.Controllers
         [HttpGet]
         public IActionResult Get(string fileUrl, byte offsetPercent = 0, string algorithm = "MD5", bool force = false)
         {
-            if (offsetPercent > 100)
+            if (offsetPercent > 50)
             {
-                return BadRequest("offset must be less than 100 percent");
+                return BadRequest("offset must be less than 50 percent");
             }
 
             if (!isValidUrl(fileUrl))
@@ -47,7 +47,7 @@ namespace ChecksumAPI.Controllers
                     result = webClient.DownloadData(fileUrl);
                 }
 
-                for (byte op = 0; op < 100; op++)
+                for (byte op = 0; op < 50; op++)
                 {
                     var offset = result.Length * op / 200;
                     byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName(algorithm)).ComputeHash(result, offset, result.Length - offset);
