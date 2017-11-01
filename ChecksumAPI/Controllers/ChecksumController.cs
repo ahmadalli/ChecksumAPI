@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Microsoft.Extensions.Logging;
 
 namespace ChecksumAPI.Controllers
 {
@@ -17,11 +18,13 @@ namespace ChecksumAPI.Controllers
     {
         private readonly CADbContext _context;
         private readonly DbSet<FileChecksum> _set;
+        private readonly ILogger _logger;
 
-        public ChecksumController(CADbContext context)
+        public ChecksumController(CADbContext context, ILogger logger)
         {
             _context = context;
             _set = _context.Set<FileChecksum>();
+            _logger = logger;
         }
 
         [HttpGet]
@@ -68,9 +71,9 @@ namespace ChecksumAPI.Controllers
 
                         _context.SaveChanges();
                     }
-                    catch
+                    catch (Exception ex)
                     {
-
+                        _logger.LogError(ex, "");
                         continue;
                     }
 
