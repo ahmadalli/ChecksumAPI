@@ -30,10 +30,10 @@ namespace ChecksumAPI.Controllers
         [HttpGet]
         public IActionResult Get(string fileUrl, byte offsetPercent = 0, string algorithm = "MD5", bool force = false)
         {
-            _logger.LogInformation("ChecksumController - Get - init");
-            if (offsetPercent > 50)
+            _logger.LogInformation("Get - init");
+            if (offsetPercent > 99)
             {
-                return BadRequest("offset must be less than 50 percent");
+                return BadRequest("offset must be less than 100 percent");
             }
 
             if (!isValidUrl(fileUrl))
@@ -45,7 +45,7 @@ namespace ChecksumAPI.Controllers
 
             if (force || !_set.Any(predicate))
             {
-                _logger.LogInformation("ChecksumController - Get - downloading");
+                _logger.LogInformation("Get - downloading");
 
                 byte[] result;
                 using (var webClient = new System.Net.WebClient())
@@ -57,7 +57,7 @@ namespace ChecksumAPI.Controllers
                 {
                     for (byte op = 0; op < 50;)
                     {
-                        _logger.LogInformation($"ChecksumController - Get - computing hash for op = {op}");
+                        _logger.LogInformation($"Get - computing hash for op = {op}");
 
                         try
                         {
@@ -108,7 +108,7 @@ namespace ChecksumAPI.Controllers
 
             _context.SaveChanges();
 
-            _logger.LogInformation($"ChecksumController - Get - end");
+            _logger.LogInformation($"Get - end");
 
             return Ok(_set.First(predicate).Checksum);
         }
