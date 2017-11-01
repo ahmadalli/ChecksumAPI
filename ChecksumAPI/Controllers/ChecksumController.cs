@@ -15,13 +15,11 @@ namespace ChecksumAPI.Controllers
     [Route("/")]
     public class ChecksumController : Controller
     {
-        private readonly IConfiguration _configuration;
         private readonly CADbContext _context;
         private readonly DbSet<FileChecksum> _set;
 
-        public ChecksumController(IConfiguration configuration, CADbContext context)
+        public ChecksumController(CADbContext context)
         {
-            _configuration = configuration;
             _context = context;
             _set = _context.Set<FileChecksum>();
         }
@@ -29,9 +27,9 @@ namespace ChecksumAPI.Controllers
         [HttpGet]
         public IActionResult MD5(string fileUrl, byte? offsetPercent, string algorithm = "MD5", bool force = false)
         {
-            if (offsetPercent > 49)
+            if (offsetPercent > 100)
             {
-                return BadRequest("offset must be less than 50 percent");
+                return BadRequest("offset must be less than 100 percent");
             }
 
             Expression<Func<FileChecksum, bool>> predicate = fc => fc.FileUrl == fileUrl && fc.Algorithm == "MD5" && fc.OffsetPercent == offsetPercent;
@@ -44,9 +42,9 @@ namespace ChecksumAPI.Controllers
                     result = webClient.DownloadData(fileUrl);
                 }
 
-                for (byte op = 0; op < 50; op++)
+                for (byte op = 0; op < 100; op++)
                 {
-                    var offset = result.Length * (offsetPercent ?? Convert.ToInt32(_configuration["MD5FileOffsetPercent"])) / 200;
+                    var offset = result.Length * op / 200;
                     byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName(algorithm)).ComputeHash(result, offset, result.Length - offset);
                     var checksum = BitConverter
                         .ToString(hash)
