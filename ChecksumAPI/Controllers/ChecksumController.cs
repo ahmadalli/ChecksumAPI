@@ -25,7 +25,7 @@ namespace ChecksumAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult MD5(string fileUrl, byte? offsetPercent, string algorithm = "MD5", bool force = false)
+        public IActionResult Get(string fileUrl, byte? offsetPercent, string algorithm = "MD5", bool force = false)
         {
             if (offsetPercent > 100)
             {
