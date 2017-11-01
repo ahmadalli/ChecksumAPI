@@ -20,11 +20,11 @@ namespace ChecksumAPI.Controllers
         private readonly DbSet<FileChecksum> _set;
         private readonly ILogger _logger;
 
-        public ChecksumController(CADbContext context, ILogger logger)
+        public ChecksumController(CADbContext context, ILoggerFactory loggerFactory)
         {
             _context = context;
             _set = _context.Set<FileChecksum>();
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger(nameof(ChecksumController));
         }
 
         [HttpGet]
