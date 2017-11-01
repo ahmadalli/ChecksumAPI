@@ -12,14 +12,14 @@ using System.Linq.Expressions;
 namespace ChecksumAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("/MD5")]
-    public class MD5Controller : Controller
+    [Route("/")]
+    public class ChecksumController : Controller
     {
         private readonly IConfiguration _configuration;
         private readonly CADbContext _context;
         private readonly DbSet<FileChecksum> _set;
 
-        public MD5Controller(IConfiguration configuration, CADbContext context)
+        public ChecksumController(IConfiguration configuration, CADbContext context)
         {
             _configuration = configuration;
             _context = context;
@@ -27,7 +27,7 @@ namespace ChecksumAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult MD5(string fileUrl, byte? offsetPercent, bool force = false)
+        public IActionResult MD5(string fileUrl, byte? offsetPercent, string algorithm = "MD5", bool force = false)
         {
             if (offsetPercent > 49)
             {
@@ -47,7 +47,7 @@ namespace ChecksumAPI.Controllers
                 for (byte op = 0; op < 50; op++)
                 {
                     var offset = result.Length * (offsetPercent ?? Convert.ToInt32(_configuration["MD5FileOffsetPercent"])) / 200;
-                    byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName("MD5")).ComputeHash(result, offset, result.Length - offset);
+                    byte[] hash = ((HashAlgorithm)CryptoConfig.CreateFromName(algorithm)).ComputeHash(result, offset, result.Length - offset);
                     var checksum = BitConverter
                         .ToString(hash)
                         .Replace("-", string.Empty)
@@ -57,7 +57,7 @@ namespace ChecksumAPI.Controllers
                     {
                         FileUrl = fileUrl,
                         OffsetPercent = op,
-                        Algorithm = "MD5",
+                        Algorithm = algorithm,
                         Checksum = checksum
                     });
                 }
