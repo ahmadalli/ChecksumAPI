@@ -1,12 +1,13 @@
 # Checksum API
 
-This project is for calculating checksum of a url. For now, MD5 hashing is implemented.
+This project is for calculating checksum of a url.
 
-## MD5
+## How to use api
 
-To use this api call `/MD5`
+call `/` via get method.
 
 ### Parameters
 
-- `fileUrl`: url of file.
-- `offsetPercent`: files have some metadata like id3 tags. in order to prevent them to interfere with core data of file, I'm using offset percent. when you use that, some parts of beginning and ending of the file will be ignored. You also can set this on `appsettings.json` file.
+- `fileUrl` is url of file.
+- `offsetPercent` is files have some metadata like id3 tags. in order to prevent them to interfere with core data of file, I'm using offset percent. when you use that, some parts of beginning and ending of the file will be ignored. You also can set this on `appsettings.json` file.
+- `algorithm` is hashing algorithm. The default value is `MD5`. You can find acceptable values [here](https://github.com/dotnet/corefx/blob/master/src/System.Security.Cryptography.Algorithms/src/System/Security/Cryptography/CryptoConfig.cs).
