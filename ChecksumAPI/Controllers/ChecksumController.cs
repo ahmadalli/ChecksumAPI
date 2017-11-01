@@ -92,9 +92,7 @@ namespace ChecksumAPI.Controllers
 
         private bool isValidUrl(string url)
         {
-            Uri uriResult;
-
-            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
             return result;
